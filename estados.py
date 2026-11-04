@@ -30,3 +30,30 @@ for c in VARS_ESTADO:
     df["log_" + c] = np.log10(df[c])
 VARS_LOG = ["log_" + c for c in VARS_ESTADO]
 print("Filas tras limpieza:",len(df))
+
+#Estados K-MEANS
+
+scaler = StandardScaler().fit(df[VARS_LOG])
+X = scaler.transform(df[VARS_LOG])
+kmeans = KMeans(n_clusters=K, n_init=10, random_state=SEMILLA).fit(X)
+print("Silhoutte con K =", K, ":", round(silhouette_score(X, kmeans.labels_), 3))
+
+#Re orden de los Clsuters
+
+crudo = pd.Series(kmeans.labels_, index=df.index)
+orden = df.groupby(crudo)["y"].mean().sort_values().index.tolist()
+mapa = {viejo: nuevo for nuevo, viejo in enumerate(orden)}
+df["estado"] = crudo.map(mapa)
+df["estado_nombre"] = df["estado"].map(dict(enumerate(NOMBRES)))
+
+#Perfil de cada estado
+perfil = df.groupby(['estado','estado_nombre']).agg(
+    n=("y","size"),
+    troponina_mediana=("Troponin","median"),
+    ckmb_mediana=("CK-MB","median"),
+    pct_positivo=("y","mean"),
+    edad_mediana=("Age","median"),
+).round(3)
+perfil["pct_positivo"] = (perfil["pct_positivo"]*100).round(1)
+print("\n", perfil)
+
