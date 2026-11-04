@@ -1,0 +1,46 @@
+{
+  "states": [
+    "Bajo",
+    "Dudoso",
+    "Alto-Troponina",
+    "Alto-CKMB"
+  ],
+  "actions": [
+    "ESCALAR",
+    "REPETIR",
+    "SEGUIMIENTO"
+  ],
+  "nombre_accion": {
+    "ESCALAR": "Alerta ROJA: escalar al médico y priorizar atención",
+    "REPETIR": "Alerta AMARILLA: repetir medición y pedir valoración clínica",
+    "SEGUIMIENTO": "Alerta VERDE: seguimiento habitual"
+  },
+  "recompensa": {
+    "ESCALAR": {
+      "infarto": 100,
+      "sano": -10
+    },
+    "REPETIR": {
+      "infarto": -40,
+      "sano": -3
+    },
+    "SEGUIMIENTO": {
+      "infarto": -1000,
+      "sano": 5
+    }
+  },
+  "efecto_marcadores": {
+    "ESCALAR": {
+      "infarto": 0.4,
+      "sano": 1.0
+    },
+    "REPETIR": {
+      "infarto": 1.15,
+      "sano": 1.0
+    },
+    "SEGUIMIENTO": {
+      "infarto": 1.6,
+      "sano": 1.0
+    }
+  }
+}
