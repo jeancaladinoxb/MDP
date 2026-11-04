@@ -9,7 +9,7 @@ RUTA = "Medicaldataset.csv"
 VARS_ESTADO = ["Troponin","CK-MB"]
 K= 4
 SEMILLA= 42
-NOMBRES= ["Bajo","Dudoso","Intermedio","Alto"]
+NOMBRES= ["Bajo","Dudoso","Alto-Troponina","Alto-CKMB"]
 
 #Limpieza 
 
@@ -38,7 +38,7 @@ X = scaler.transform(df[VARS_LOG])
 kmeans = KMeans(n_clusters=K, n_init=10, random_state=SEMILLA).fit(X)
 print("Silhoutte con K =", K, ":", round(silhouette_score(X, kmeans.labels_), 3))
 
-#Re orden de los Clsuters
+#Re orden de los Clusters
 
 crudo = pd.Series(kmeans.labels_, index=df.index)
 orden = df.groupby(crudo)["y"].mean().sort_values().index.tolist()
@@ -57,3 +57,10 @@ perfil = df.groupby(['estado','estado_nombre']).agg(
 perfil["pct_positivo"] = (perfil["pct_positivo"]*100).round(1)
 print("\n", perfil)
 
+# Archivos de salida 
+
+df.to_csv("dataset_con_estados.csv", index=False)
+perfil.to_csv("perfil_estados.csv")
+joblib.dump({"scaler":scaler, "kmeans":kmeans, "mapa":mapa, "vars":VARS_ESTADO, "nombres":NOMBRES}, "modelo_estados.joblib")
+
+print("\nGuardados: dataset_con_estados.csv, perfil_estados.csv, modelo_estados.joblib")
